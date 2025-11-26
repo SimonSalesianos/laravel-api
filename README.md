@@ -133,15 +133,18 @@ Significa:
 ## TIPOS NUMÉRICOS EN MIGRACIONES
 
 ### Decimales / precisión fija
+
 ```decimal(precision, scale)``` → perfecto para dinero.
 
 ### Números en coma flotante
+
 ```float(total, decimals)```
 
 ```double(total, decimals)``` → igual que float pero más precisión.
 
 ### Booleanos
-boolean() → se almacena como TINYINT(1).
+
+```boolean()``` → se almacena como TINYINT(1).
 
 ### Otros menos usados
 ```unsignedBigInteger()```, ```mediumInteger()```, ```unsignedTinyInteger()```, etc.
