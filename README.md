@@ -63,6 +63,25 @@ Este proyecto está basado en **Laravel**, un framework de PHP moderno y expresi
 
 ---
 
+## 💾 Conexión con la base de datos
+
+Debemos editar el fichero .env de nuestro proyecto, modificando la siguiente configuración como corresponda:
+
+```php
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sacristan_db // nombre de la base de datos
+DB_USERNAME=sacdbuser // usuario de conexión a la base de datos
+DB_PASSWORD=password // contraseña de conexión a la base de datos
+```
+
+Si necesitamos limpiar la información de la conexión de la caché, utilizar el siguiente comando en el terminal:
+
+```bash
+php artisan config:clear 
+```
+
 ## 🧱 Generación de código con Artisan
 
 ### Crear nuevos modelos
@@ -104,6 +123,95 @@ Aplicar las migraciones:
 
 ```bash
 php artisan migrate
+```
+
+En Laravel, las relaciones en migraciones se definen usando foreignId y constrained(). Esto crea una columna con clave foránea y la enlaza automáticamente con la tabla correspondiente.
+
+Ejemplo:
+
+```php
+Schema::create('producto', function (Blueprint $table) {
+    $table->id();  // Identificador principal
+    $table->foreignId('categoria_id')->constrained('categorias', 'id')->cascadeOnDelete();
+    $table->string('title');  // Campo de texto corto
+    $table->decimal('precio', 10, 2);
+    $table->timestamps();
+});
+
+```
+Significa:
+
+```foreignId('categoria_id'):``` crea una columna categoria_id tipo BIGINT sin signo.
+
+```constrained('categorias', 'id'):``` asume que la tabla relacionada es categorias y la columna es id.
+
+```cascadeOnDelete():``` si el usuario se borra, también se borran las secuencias asociadas.
+
+```$table->decimal('precio', 10, 2);``` 10 = dígitos totales, 2 = decimales. 
+
+## TIPOS NUMÉRICOS EN MIGRACIONES
+
+### Decimales / precisión fija
+
+```decimal(precision, scale)``` → perfecto para dinero.
+
+### Números en coma flotante
+
+```float(total, decimals)```
+
+```double(total, decimals)``` → igual que float pero más precisión.
+
+### Booleanos
+
+```boolean()``` → se almacena como TINYINT(1).
+
+### Otros menos usados
+```unsignedBigInteger()```, ```mediumInteger()```, ```unsignedTinyInteger()```, etc.
+
+Si trabajas con cantidades económicas → decimal.
+
+Si necesitas enteros → cualquier integer.
+
+Si necesitas aproximación → float o double.
+
+## TIPOS FECHAS Y TIEMPO EN MIGRACIONES
+
+```date()``` → solo fecha (YYYY-MM-DD)
+
+```datetime()``` → fecha y hora
+
+```timestamp()``` → marca de tiempo (usado para created_at, updated_at)
+
+```time()``` → solo hora
+
+```year()``` → solo año
+
+dateTimeTz() / timestampTz() → versiones con zona horaria
+
+### Otros útiles:
+
+```softDeletes()``` → crea deleted_at tipo timestamp
+
+```timestamps()``` → crea created_at y updated_at
+
+## TIPOS TEXTOS EN MIGRACIONES
+
+```string()``` → VARCHAR (hasta 255 chars)
+
+```text()``` → TEXT (hasta ~64 KB)
+
+```mediumText()``` → MEDIUMTEXT (hasta ~16 MB)
+
+```longText()``` → LONGTEXT (hasta ~4 GB)
+
+```char()``` → CHAR de longitud fija
+
+Ejemplos:
+```php
+$table->string('titulo');
+$table->text('descripcion');
+$table->mediumText('contenido_largo');
+$table->longText('json_grande');
 ```
 
 ---
